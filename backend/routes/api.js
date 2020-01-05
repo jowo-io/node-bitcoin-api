@@ -1,8 +1,8 @@
 const express = require("express");
-const router = express.Router();
-var request = require("request");
-
+const request = require("request");
 const dotenv = require("dotenv");
+
+const router = express.Router();
 dotenv.config();
 
 const USER = process.env.RPC_USER;
