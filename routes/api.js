@@ -13,25 +13,37 @@ const headers = {
 };
 
 const methodsList = [
-    "getblockcount",
-    "getbestblockhash",
-    "getconnectioncount",
-    "getdifficulty",
-    "getblockchaininfo",
-    "getmininginfo",
-    "getpeerinfo",
-    "getrawmempool"
+    { method: "getblockcount" },
+    { method: "getbestblockhash" },
+    { method: "getconnectioncount" },
+    { method: "getdifficulty" },
+    { method: "getblockchaininfo" },
+    { method: "getmininginfo" },
+    { method: "getpeerinfo" },
+    { method: "getrawmempool" },
+    { method: "getblock", param: "hash" },
+    { method: "getblockhash", param: "index" }
 ];
 
 router.get("/test", (req, res) => res.json({ msg: "backend works" }));
 
-methodsList.forEach(method => {
-    router.get(`/${method}`, (req, res) => {
+methodsList.forEach(methodInfo => {
+    let path = `/${methodInfo.method}`;
+    if (methodInfo.param) {
+        path += `/:${methodInfo.param}`;
+    }
+
+    router.get(path, (req, res) => {
+        let params = [];
+        if (methodInfo.param) {
+            params.push(req.params[methodInfo.param]);
+        }
+
         const body = JSON.stringify({
             jsonrpc: "1.0",
             id: "curltext",
-            method,
-            params: []
+            method: methodInfo.method,
+            params
         });
 
         const options = {
