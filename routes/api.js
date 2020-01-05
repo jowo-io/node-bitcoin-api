@@ -22,7 +22,9 @@ const methodsList = [
     { method: "getpeerinfo" },
     { method: "getrawmempool" },
     { method: "getblock", param: "hash" },
-    { method: "getblockhash", param: "index" }
+    { method: "getblockhash", param: "index" },
+    { method: "getrawtransaction", param: "id" },
+    { method: "decoderawtransaction", param: "hex" }
 ];
 
 router.get("/test", (req, res) => res.json({ msg: "backend works" }));
