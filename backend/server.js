@@ -1,12 +1,21 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
+
 const rpcMethods = require("./routes/api");
 
 const app = express();
 
+const apiPath = "/api";
+
+const corsOptions = {
+    origin: "*"
+};
+
+app.use(apiPath, cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use("/api", rpcMethods);
+app.use(apiPath, rpcMethods);
 
 const port = process.env.PORT || 4444;
 
