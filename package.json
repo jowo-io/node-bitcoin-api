@@ -7,7 +7,7 @@
     "url": "git+https://github.com/jowo-io/node-bitcoin-api.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "jowo-io",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jowo-io/node-bitcoin-api/issues"
