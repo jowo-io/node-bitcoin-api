@@ -18,8 +18,3 @@ yarn-debug.log*
 yarn-error.log*
 log.txt
 yarn-error.log*
-lerna-debug.log
-
-# env
-.env
-
