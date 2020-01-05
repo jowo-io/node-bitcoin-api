@@ -1,16 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-const App = function() {
-    return (
-        <div>
-            <h4>
-                <b>Hello world</b>!
-            </h4>
-            <p>blah blah blah...</p>
-        </div>
-    );
-};
+import App from "./App";
 
 // create an empty div
 const rootDiv = document.createElement("div");
