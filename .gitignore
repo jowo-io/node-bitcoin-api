@@ -1,0 +1,25 @@
+# settings
+.vscode/
+
+# node/npm
+package-lock.json
+node_modules/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Caches
+.cache
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+log.txt
+yarn-error.log*
+lerna-debug.log
+
+# env
+.env*
+

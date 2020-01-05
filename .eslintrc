@@ -1,0 +1,101 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "prettier",
+    "prettier/react"
+  ],
+  "env": {
+    "browser": true,
+    "jest": true,
+    "node": true,
+    "es6": true
+  },
+  "globals": {
+    "module": true,
+    "require": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "curly": [1, "multi-line"],
+    "guard-for-in": 1,
+    "jsx-quotes": [2, "prefer-double"],
+    "max-len": [0, 150, 4],
+    "object-curly-spacing": [1, "always"],
+    "semi": [1, "always"],
+    "strict": [1, "safe"],
+    "no-console": 0,
+    "no-bitwise": 1,
+    "no-undef": 1,
+    "no-useless-escape": 0,
+    "no-mixed-requires": [0, false],
+    "no-redeclare": 1,
+    "no-unused-vars": 0,
+    "no-dupe-args": 1,
+    "no-dupe-keys": 1,
+    "react/display-name": 0,
+    "react/jsx-no-undef": 2,
+    "react/prop-types": 2,
+    "react/no-unused-state": 2,
+    "react/no-unused-prop-types": 2,
+    "react/jsx-key": 2,
+    "react/jsx-pascal-case": 1,
+    "react/default-props-match-prop-types": 2,
+    "react/jsx-sort-props": 1,
+    "react/no-danger-with-children": 2,
+    "react/no-array-index-key": 2,
+    "react/boolean-prop-naming": [
+      "error",
+      {
+        "rule": "^(is|has)[A-Z]([A-Za-z0-9]?)+"
+      }
+    ],
+    "react/jsx-uses-react": 1,
+    "react/jsx-uses-vars": 1,
+    "react/jsx-wrap-multilines": 2,
+    "react/no-did-mount-set-state": 2,
+    "react/no-did-update-set-state": 2,
+    "react/no-will-update-set-state": 2,
+    "react/no-multi-comp": 0,
+    "react/no-unknown-property": 1,
+    "react/react-in-jsx-scope": 1,
+    "react/self-closing-comp": 1,
+    "react/jsx-curly-brace-presence": [
+      2,
+      {
+        "props": "never",
+        "children": "never"
+      }
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 100,
+        "tabWidth": 4,
+        "useTabs": false,
+        "semi": true,
+        "singleQuote": false,
+        "trailingComma": "none",
+        "bracketSpacing": true,
+        "jsxBracketSameLine": false,
+        "parser": "babel",
+        "proseWrap": "always"
+      }
+    ]
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "spread": true
+    }
+  },
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "^16.6.3"
+    }
+  },
+  "plugins": ["react", "prettier"]
+}
