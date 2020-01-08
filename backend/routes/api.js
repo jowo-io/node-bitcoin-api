@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const router = express.Router();
 dotenv.config();
 
+const PORT = process.env.RPC_PORT;
 const USER = process.env.RPC_USER;
 const PASS = process.env.RPC_PASSWORD;
 
@@ -29,6 +30,20 @@ const methodsList = [
 
 router.get("/test", (req, res) => res.json({ msg: "backend works" }));
 
+/**
+ * TODO: convert method to use `bitcoin-core` package
+ *
+ * @example
+ * const Client = require('bitcoin-core');
+ * const client = new Client({
+ *   network: 'test',
+ *   username: USER,
+ *   password: PASS,
+ *   port: PORT
+ * });
+ * client.getBlockchainInfo().then((help) => console.log(help));
+ *
+ */
 methodsList.forEach(methodInfo => {
     let path = `/${methodInfo.method}`;
     if (methodInfo.param) {
@@ -49,7 +64,7 @@ methodsList.forEach(methodInfo => {
         });
 
         const options = {
-            url: `http://${USER}:${PASS}@127.0.0.1:8332/`,
+            url: `http://${USER}:${PASS}@127.0.0.1:${PORT}/`,
             method: "POST",
             headers,
             body

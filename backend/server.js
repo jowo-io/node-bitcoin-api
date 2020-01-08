@@ -17,6 +17,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(apiPath, rpcMethods);
 
-const port = process.env.PORT || 4444;
+const port = process.env.PORT || 4004;
 
 const server = app.listen(port, () => console.log(`Server running on port ${port}`));
