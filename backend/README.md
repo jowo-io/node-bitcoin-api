@@ -7,11 +7,10 @@ Ensure you update the `bitcoin.conf` file in Bitcoin Core to the following:
 ```
 rpcuser=bitcoinuser
 rpcpassword=bitcoinpassword
-testnet=1
+rpcallowip=127.0.0.1
 server=1
 daemon=1
 txindex=1
-rpcallowip=127.0.0.1
 [test]
 rpcport=19832
 ```
