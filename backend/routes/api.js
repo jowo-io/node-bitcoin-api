@@ -1,6 +1,7 @@
 const express = require("express");
-const request = require("request");
+const rp = require("request-promise");
 const dotenv = require("dotenv");
+const get = require("lodash.get");
 
 const router = express.Router();
 dotenv.config();
@@ -22,63 +23,99 @@ const methodsList = [
     { method: "getmininginfo" },
     { method: "getpeerinfo" },
     { method: "getrawmempool" },
-    { method: "getblock", param: "hash" },
-    { method: "getblockhash", param: "index" },
-    { method: "getrawtransaction", param: "id" },
-    { method: "decoderawtransaction", param: "hex" }
+    { method: "getblock", params: ["hash"] },
+    { method: "getblockhash", params: ["index"] },
+    { method: "getrawtransaction", params: ["txid", "verbose"] },
+    { method: "gettransaction", params: ["txid"] }
 ];
 
-router.get("/test", (req, res) => res.json({ msg: "backend works" }));
-
-/**
- * TODO: convert method to use `bitcoin-core` package
- *
- * @example
- * const Client = require('bitcoin-core');
- * const client = new Client({
- *   network: 'test',
- *   username: USER,
- *   password: PASS,
- *   port: PORT
- * });
- * client.getBlockchainInfo().then((help) => console.log(help));
- *
- */
-methodsList.forEach(methodInfo => {
-    let path = `/${methodInfo.method}`;
-    if (methodInfo.param) {
-        path += `/:${methodInfo.param}`;
-    }
-
-    router.get(path, (req, res) => {
-        let params = [];
-        if (methodInfo.param) {
-            params.push(req.params[methodInfo.param]);
-        }
-
-        const body = JSON.stringify({
-            jsonrpc: "1.0",
-            id: "curltext",
-            method: methodInfo.method,
-            params
-        });
-
-        const options = {
-            url: `http://${USER}:${PASS}@127.0.0.1:${PORT}/`,
-            method: "POST",
-            headers,
-            body
-        };
-
-        function callback(error, response, body) {
-            if (!error && response.statusCode == 200) {
-                const data = JSON.parse(body);
-                res.send(data);
-            }
-        }
-
-        request(options, callback);
+function getOptions(method, params) {
+    const body = JSON.stringify({
+        jsonrpc: "1.0",
+        id: "curltext",
+        method,
+        params
     });
+
+    const options = {
+        url: `http://${USER}:${PASS}@127.0.0.1:${PORT}/`,
+        method: "POST",
+        headers,
+        body
+    };
+
+    return options;
+}
+
+function rpcRequest(options) {
+    return new Promise((resolve, reject) => {
+        return rp({ ...options, resolveWithFullResponse: true })
+            .then(response => {
+                const is200 = response.statusCode == 200;
+                if (is200) {
+                    const result = JSON.parse(response.body).result;
+                    resolve(result);
+                } else if (!is200) {
+                    reject(response.statusCode);
+                }
+            })
+            .catch(error => {
+                console.error(error.response.body);
+                reject(500);
+            });
+    });
+}
+
+// RPC
+
+methodsList.forEach(methodInfo => {
+    const path = `/rpc/${methodInfo.method}`;
+
+    router.post(path, (req, res) => {
+        const params = {};
+
+        if (methodInfo.params) {
+            methodInfo.params.forEach(param => {
+                params[param] = req.body[param];
+            });
+        }
+
+        const options = getOptions(methodInfo.method, params);
+        return rpcRequest(options)
+            .then(result => res.send({ result }))
+            .catch(statusCode => res.status(statusCode).send(""));
+    });
+});
+
+// CUSTOM
+
+router.post("/custom/test", (req, res) => res.json({ msg: "Message from the backend!" }));
+
+router.post("/custom/getblockcoinbase", (req, res) => {
+    return Promise.resolve()
+        .then(() => {
+            const options = getOptions("getblockhash", {
+                height: Number(req.body.height)
+            });
+            return rpcRequest(options);
+        })
+        .then(blockhash => {
+            const options = getOptions("getblock", {
+                blockhash,
+                verbose: 1
+            });
+            return rpcRequest(options);
+        })
+        .then(block => {
+            const options = getOptions("getrawtransaction", {
+                txid: get(block, "tx.0"),
+                verbose: 1
+            });
+            return rpcRequest(options);
+        })
+        .then(tx => get(tx, "vin.0.coinbase"))
+        .then(result => res.send({ result }))
+        .catch(statusCode => res.status(statusCode).send(""));
 });
 
 module.exports = router;

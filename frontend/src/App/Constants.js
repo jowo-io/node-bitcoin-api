@@ -1,7 +1,7 @@
 export const apiUrl = "http://localhost:4004/api";
 
 export const defaultAxiosOptions = {
-    timeout: 10000,
+    timeout: 30000,
     crossDomain: true,
     cache: "no-cache",
     referrer: "no-referrer",
@@ -12,3 +12,5 @@ export const defaultAxiosOptions = {
     },
     responseType: "json"
 };
+
+export const coinbaseDefaultLength = "04ffff001d0104".length;

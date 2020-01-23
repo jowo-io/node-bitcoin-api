@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 
-import { apiUrl, defaultAxiosOptions } from "./Constants";
+import { getTest, getBlockCoinbase, getBlockchainInfo } from "./Utils";
+
+const maxCount = 100;
 
 class App extends React.Component {
     constructor(props) {
@@ -10,75 +11,64 @@ class App extends React.Component {
 
         this.state = {
             test: "loading...",
-            blockchainInfo: {},
-            miningInfo: {},
-            peerInfo: []
+            latestBlockId: "loading...",
+            currentBlockId: "loading...",
+            coinbaseList: []
         };
     }
 
     componentDidMount() {
-        this.getTest();
-        this.getBlockchainInfo();
-        this.getMiningInfo();
-        this.getPeerInfo();
+        getTest()
+            .then(test => this.setState({ test }))
+            .catch(console.error);
+
+        getBlockchainInfo()
+            .then(({ blocks: latestBlockId }) => {
+                this.setState({ latestBlockId });
+                this.recurseCoinbase(latestBlockId - maxCount);
+            })
+            .catch(console.error);
     }
 
-    getTest = () => {
-        axios
-            .get(`${apiUrl}/test`, defaultAxiosOptions)
-            .then(res => {
-                const data = res.data;
-                const result = data.msg;
-                this.setState({ test: result });
+    recurseCoinbase = currentBlockId => {
+        this.setState(() => ({ currentBlockId }));
+        getBlockCoinbase(currentBlockId)
+            .then(result => {
+                let latestBlockId;
+                this.setState(
+                    prevState => {
+                        latestBlockId = prevState.latestBlockId;
+                        return {
+                            coinbaseList: [result.ascii, ...prevState.coinbaseList]
+                        };
+                    },
+                    () => {
+                        if (latestBlockId !== currentBlockId) {
+                            this.recurseCoinbase(currentBlockId + 1);
+                        }
+                    }
+                );
             })
-            .catch(err => console.log(err));
-    };
-
-    getBlockchainInfo = () => {
-        axios
-            .get(`${apiUrl}/getblockchaininfo`, defaultAxiosOptions)
-            .then(res => {
-                const data = res.data;
-                const result = data.result;
-                this.setState({ blockchainInfo: result });
-            })
-            .catch(err => console.log(err));
-    };
-
-    getMiningInfo = () => {
-        axios
-            .get(`${apiUrl}/getmininginfo`, defaultAxiosOptions)
-            .then(res => {
-                const data = res.data;
-                const result = data.result;
-                this.setState({ miningInfo: result });
-            })
-            .catch(err => console.log(err));
-    };
-
-    getPeerInfo = () => {
-        axios
-            .get(`${apiUrl}/getpeerinfo`, defaultAxiosOptions)
-            .then(res => {
-                const data = res.data;
-                const result = data.result;
-                this.setState({ peerInfo: result });
-            })
-            .catch(err => console.log(err));
+            .catch(console.error);
     };
 
     render() {
-        const { test, blockchainInfo, miningInfo, peerInfo } = this.state;
+        const { test, coinbaseList, latestBlockId, currentBlockId } = this.state;
 
         return (
             <div className="App">
                 <h1>Bitcoin API</h1>
-
                 <p>Test: {test}</p>
+                <p>Latest Block ID: {latestBlockId}</p>
+                <p>Current Block ID: {currentBlockId}</p>
 
-                <p>Number of blocks: {blockchainInfo.blocks || "loading..."}</p>
-                <p>Mining Difficulty: {miningInfo.difficulty || "loading..."}</p>
-                <p>Number of Peers: {peerInfo.length}</p>
+                <p>See below for the most recent {maxCount} block coinbase messages.</p>
+                <textarea
+                    cols={65}
+                    defaultValue={coinbaseList.join("\n\n")}
+                    disabled={latestBlockId !== currentBlockId}
+                    rows={20}
+                />
             </div>
         );
     }
