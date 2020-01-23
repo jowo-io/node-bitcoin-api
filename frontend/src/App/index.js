@@ -11,8 +11,8 @@ class App extends React.Component {
 
         this.state = {
             test: "loading...",
-            latestBlockId: "loading...",
-            currentBlockId: "loading...",
+            latestBlockHeight: "loading...",
+            currentBlockHeight: "loading...",
             coinbaseList: []
         };
     }
@@ -22,29 +22,34 @@ class App extends React.Component {
             .then(test => this.setState({ test }))
             .catch(console.error);
 
+        // get blockchain info then set latest block height and init recursion
         getBlockchainInfo()
-            .then(({ blocks: latestBlockId }) => {
-                this.setState({ latestBlockId });
-                this.recurseCoinbase(latestBlockId - maxCount);
+            .then(({ blocks: latestBlockHeight }) => {
+                this.setState({ latestBlockHeight });
+                this.recurseCoinbase(latestBlockHeight - maxCount);
             })
             .catch(console.error);
     }
 
-    recurseCoinbase = currentBlockId => {
-        this.setState(() => ({ currentBlockId }));
-        getBlockCoinbase(currentBlockId)
+    recurseCoinbase = currentBlockHeight => {
+        // set the current block id
+        this.setState(() => ({ currentBlockHeight }));
+
+        // async lookup message in block's coinbase
+        getBlockCoinbase(currentBlockHeight)
             .then(result => {
-                let latestBlockId;
+                let latestBlockHeight;
                 this.setState(
                     prevState => {
-                        latestBlockId = prevState.latestBlockId;
+                        latestBlockHeight = prevState.latestBlockHeight;
                         return {
                             coinbaseList: [result.ascii, ...prevState.coinbaseList]
                         };
                     },
                     () => {
-                        if (latestBlockId !== currentBlockId) {
-                            this.recurseCoinbase(currentBlockId + 1);
+                        // recursively iterate until caught up to latest block
+                        if (latestBlockHeight !== currentBlockHeight) {
+                            this.recurseCoinbase(currentBlockHeight + 1);
                         }
                     }
                 );
@@ -53,20 +58,20 @@ class App extends React.Component {
     };
 
     render() {
-        const { test, coinbaseList, latestBlockId, currentBlockId } = this.state;
+        const { test, coinbaseList, latestBlockHeight, currentBlockHeight } = this.state;
 
         return (
             <div className="App">
                 <h1>Bitcoin API</h1>
                 <p>Test: {test}</p>
-                <p>Latest Block ID: {latestBlockId}</p>
-                <p>Current Block ID: {currentBlockId}</p>
+                <p>Latest block height: {latestBlockHeight}</p>
+                <p>Current block height: {currentBlockHeight}</p>
 
                 <p>See below for the most recent {maxCount} block coinbase messages.</p>
                 <textarea
                     cols={65}
                     defaultValue={coinbaseList.join("\n\n")}
-                    disabled={latestBlockId !== currentBlockId}
+                    disabled={latestBlockHeight !== currentBlockHeight}
                     rows={20}
                 />
             </div>

@@ -29,6 +29,13 @@ const methodsList = [
     { method: "gettransaction", params: ["txid"] }
 ];
 
+/**
+ * boilerplate for generating an options object for
+ * a bitcoin RPC request
+ *
+ * @param {object} method
+ * @param {object} params
+ */
 function getOptions(method, params) {
     const body = JSON.stringify({
         jsonrpc: "1.0",
@@ -47,6 +54,13 @@ function getOptions(method, params) {
     return options;
 }
 
+/**
+ * fires off an async request with some
+ * boilerplate configured for processing
+ * the responses data from the bitcoin RPC.
+ *
+ * @param {object} options
+ */
 function rpcRequest(options) {
     return new Promise((resolve, reject) => {
         return rp({ ...options, resolveWithFullResponse: true })
@@ -68,6 +82,10 @@ function rpcRequest(options) {
 
 // RPC
 
+/**
+ * generic endpoint generator.
+ * you can add more endpoints to the `methodInfo` map
+ */
 methodsList.forEach(methodInfo => {
     const path = `/rpc/${methodInfo.method}`;
 
@@ -91,6 +109,11 @@ methodsList.forEach(methodInfo => {
 
 router.post("/custom/test", (req, res) => res.json({ msg: "Message from the backend!" }));
 
+/**
+ * This endpoint jumps through all the hoops of lookup up the
+ * coinbase transaction message starting with an input of only
+ * the height of the block required.
+ */
 router.post("/custom/getblockcoinbase", (req, res) => {
     return Promise.resolve()
         .then(() => {
