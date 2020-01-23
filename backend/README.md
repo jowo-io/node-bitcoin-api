@@ -33,11 +33,9 @@ Run `npm run server` to launch the dev server.
 
 ## Testnet wallet
 
-Your public key is: `mxUWBjQnpY6bdEJwJtit1nztMm5tU2jxAj`
-
-Your private key is: `931DgRzoiZ7jhcnxd1rQyJ4xbo5Goru4PsDFY8qVPkiySav8fz5`
-
 Generate testnet wallets online [here](https://bitcoinpaperwallet.com/bitcoinpaperwallet/generate-wallet.html?design=alt-testnet)
+
+--
 
 Send testnet coins to you testnet address [here](https://coinfaucet.eu/en/btc-testnet/)
 
