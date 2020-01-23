@@ -2,7 +2,8 @@
   "name": "bitcoin-frontend",
   "version": "1.0.0",
   "scripts": {
-    "dev": "webpack-dev-server --mode=development --watch"
+    "dev": "webpack-dev-server --mode=development --watch",
+    "build": "webpack --mode=production"
   },
   "devDependencies": {
     "@babel/core": "^7.7.7",
